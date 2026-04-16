@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Analysis - G.S. GIHUNDWE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --emerald: #166534;
+            --emerald-dark: #064e3b;
+            --emerald-light: #ecfdf5;
+            --slate-900: #0f172a;
+            --slate-700: #334155;
+            --slate-200: #e2e8f0;
+            --crimson: #991b1b;
+            --crimson-light: #fef2f2;
+        }
+
+        body {
+            background-color: #f8fafc;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            padding-top: 80px;
+            padding-bottom: 60px;
+        }
+
+        .navbar-custom {
+            background-color: white;
+            border-bottom: 1px solid var(--slate-200);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .navbar-brand { font-weight: 800; color: var(--emerald) !important; }
+
+        .result-hero {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid var(--slate-200);
+            overflow: hidden;
+            margin-bottom: 2.5rem;
+        }
+
+        .hero-main {
+            padding: 2.5rem;
+            background: linear-gradient(135deg, var(--emerald) 0%, var(--emerald-dark) 100%);
+            color: white;
+        }
+
+        .hero-stats {
+            padding: 1.5rem 2.5rem;
+            display: flex;
+            gap: 3rem;
+            background: #fdfdfd;
+        }
+
+        .stat-group label {
+            display: block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--slate-700);
+            margin-bottom: 4px;
+        }
+
+        .stat-group .value {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--slate-900);
+        }
+
+        .question-card {
+            background: white;
+            border: 1px solid var(--slate-200);
+            border-radius: 20px;
+            margin-bottom: 1.5rem;
+            transition: transform 0.2s;
+        }
+
+        .answer-box {
+            padding: 1rem;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .answer-mine { background-color: #f1f5f9; border: 1px solid var(--slate-200); }
+        .answer-correct { background-color: var(--emerald-light); border: 1px solid var(--emerald); color: var(--emerald-dark); }
+        .answer-incorrect { background-color: var(--crimson-light); border: 1px solid var(--crimson); color: var(--crimson); }
+        .answer-pending { background-color: #fffbeb; border: 1px solid #f59e0b; color: #92400e; }
+
+        .feedback-badge {
+            background-color: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 1rem;
+            border-radius: 0 12px 12px 0;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="/dashboard"><i class="fas fa-graduation-cap me-2"></i>G.S. GIHUNDWE</a>
+        <div class="navbar-nav ms-auto align-items-center">
+            <a class="nav-link fw-bold text-emerald me-3" th:href="@{/quiz/history}">
+                <i class="fas fa-history me-1"></i> My History
+            </a>
+            <a class="btn btn-outline-danger btn-sm fw-bold rounded-pill px-3" href="/logout">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="result-hero shadow-sm">
+        <div class="hero-main">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="fw-bold mb-1" th:text="${quiz.title}">Quiz Title</h1>
+                    <p class="mb-0 opacity-75"><i class="far fa-calendar-check me-2"></i>Attempt finalized on <span th:text="${#temporals.format(attempt.endTime, 'MMMM dd, yyyy · HH:mm')}">Date</span></p>
+                </div>
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <div th:if="${attempt.score != null}" class="d-inline-block text-center p-3 rounded-3" style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2);">
+                        <div class="small fw-bold text-uppercase opacity-75">Final Grade</div>
+                        <h2 class="fw-bold mb-0">
+                            <span th:text="${#numbers.formatDecimal(attempt.score, 1, 1)}">0</span>
+                            <span class="fs-4 opacity-50">/ <span th:text="${#numbers.formatDecimal(attempt.totalMarks, 1, 1)}">0</span></span>
+                        </h2>
+                    </div>
+                    <div th:if="${attempt.score == null}" class="badge bg-warning text-dark px-3 py-2 fs-6 rounded-pill">
+                        <i class="fas fa-hourglass-half me-2"></i>Grading in Progress
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-stats d-none d-md-flex">
+            <div class="stat-group">
+                <label>Status</label>
+                <div class="value">
+                    <span th:class="${attempt.status.name() == 'GRADED' ? 'text-success' : 'text-warning'}" th:text="${attempt.status}">GRADED</span>
+                </div>
+            </div>
+            <div class="stat-group border-start ps-5">
+                <label>Time Taken</label>
+                <div class="value text-slate-900">
+                    <i class="far fa-clock me-1 text-muted"></i> 
+                    Finalized
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${attempt.status.name() == 'PENDING_MANUAL_REVIEW'}" class="alert alert-warning rounded-4 border-0 shadow-sm d-flex align-items-center mb-5">
+        <i class="fas fa-info-circle fa-2x me-3"></i>
+        <div>
+            <h6 class="fw-bold mb-0">Manual Review Required</h6>
+            <small>Your teacher needs to grade the open-ended responses. Your total score will update automatically once reviewed.</small>
+        </div>
+    </div>
+
+    <h4 class="fw-bold text-slate-900 mb-4 px-2">Detailed Response Review</h4>
+
+    <div th:each="entry,iterStat : ${questions}" class="question-card shadow-sm border-0">
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-between mb-3">
+                <span class="badge bg-light text-slate-700 px-3 py-2 rounded-pill fw-bold">
+                    Question [[${iterStat.count}]]
+                </span>
+                <span class="text-muted small fw-bold text-uppercase">[[${entry.value.type}]] &nbsp;|&nbsp; [[${entry.value.marks}]] Marks</span>
+            </div>
+            
+            <h5 class="fw-bold text-slate-900 mb-4" th:text="${entry.value.questionText}">Question Prompt</h5>
+
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <label class="stat-group label mb-2 d-block">Your Submission</label>
+                    <div th:with="userAns=${answers.get(entry.key)}, correctAns=${entry.value.correctAnswer}, qType=${entry.value.type.name()}"
+                         class="answer-box h-100"
+                         th:classappend="${qType == 'OPEN_QUESTION' ? 'answer-mine' : (userAns != null and #strings.equalsIgnoreCase(#strings.trim(userAns), #strings.trim(correctAns)) ? 'answer-correct' : 'answer-incorrect')}">
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span th:text="${userAns != null ? userAns : 'No answer provided'}">Student Answer</span>
+                            <i th:if="${qType != 'OPEN_QUESTION'}" 
+                               th:class="${userAns != null and #strings.equalsIgnoreCase(#strings.trim(userAns), #strings.trim(correctAns)) ? 'fas fa-check-circle' : 'fas fa-times-circle'}"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="stat-group label mb-2 d-block">Reference Key</label>
+                    <div th:if="${entry.value.type.name() != 'OPEN_QUESTION'}" class="answer-box answer-correct">
+                        <i class="fas fa-key me-2 opacity-50"></i>
+                        <span th:text="${entry.value.correctAnswer}">Correct Answer</span>
+                    </div>
+                    <div th:if="${entry.value.type.name() == 'OPEN_QUESTION'}" class="answer-box answer-pending">
+                        <i class="fas fa-user-tie me-2 opacity-50"></i>
+                        Requires teacher evaluation
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 pt-3 border-top d-flex justify-content-between align-items-center">
+                <div th:if="${entry.value.type.name() == 'OPEN_QUESTION'}">
+                    <span th:if="${attempt.status.name() == 'GRADED'}" class="badge bg-success rounded-pill">Graded</span>
+                    <span th:unless="${attempt.status.name() == 'GRADED'}" class="badge bg-warning text-dark rounded-pill">Pending Review</span>
+                </div>
+                
+                <div th:if="${entry.value.type.name() != 'OPEN_QUESTION'}">
+                   <strong class="text-slate-700">Marks: </strong>
+                   <span th:with="userAns=${answers.get(entry.key)}, correctAns=${entry.value.correctAnswer}"
+                         th:text="${userAns != null and #strings.equalsIgnoreCase(#strings.trim(userAns), #strings.trim(correctAns)) ? entry.value.marks : '0.0'}"
+                         th:class="${userAns != null and #strings.equalsIgnoreCase(#strings.trim(userAns), #strings.trim(correctAns)) ? 'text-success fw-bold' : 'text-danger fw-bold'}">0</span>
+                   <span class="text-muted">/ [[${entry.value.marks}]]</span>
+                </div>
+
+                <div th:if="${feedbacks.get(entry.key) != null}" class="feedback-badge w-100">
+                    <div class="small fw-bold text-primary text-uppercase mb-1"><i class="fas fa-comment-dots me-2"></i>Teacher's Feedback</div>
+                    <div class="text-slate-700 italic" th:text="${feedbacks.get(entry.key)}">Feedback content</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-5 text-center">
+        <a th:href="@{/quiz/classroom/{id}(id=${quiz.classroom.id})}" class="btn btn-emerald text-white px-5 py-2 fw-bold rounded-pill shadow-sm me-3" style="background-color: var(--emerald);">
+            View Other Quizzes
+        </a>
+        <a href="/dashboard" class="btn btn-outline-secondary px-5 py-2 fw-bold rounded-pill">
+            Dashboard
+        </a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

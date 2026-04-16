@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create News - G.S. GIHUNDWE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --emerald: #166534;
+            --emerald-light: #ecfdf5;
+            --slate-900: #0f172a;
+            --slate-700: #334155;
+            --slate-200: #e2e8f0;
+            --slate-50: #f8fafc;
+        }
+
+        body { 
+            background-color: var(--slate-50); 
+            font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+            color: var(--slate-900);
+        }
+
+        
+        .navbar { 
+            background: white;
+            border-bottom: 1px solid var(--slate-200);
+            padding: 1rem 0;
+        }
+        .navbar-brand { font-weight: 800; color: var(--emerald) !important; letter-spacing: -0.5px; }
+        .nav-link { font-weight: 600; color: var(--slate-700) !important; transition: 0.3s; }
+        .nav-link:hover { color: var(--emerald) !important; }
+
+        
+        .school-header { 
+            text-align: center; 
+            padding: 50px 20px; 
+            background: linear-gradient(135deg, var(--emerald) 0%, #064e3b 100%); 
+            color: white;
+            box-shadow: inset 0 -5px 15px rgba(0,0,0,0.1);
+        }
+        .school-header h1 { font-size: 2rem; font-weight: 800; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+
+        
+        .admin-card { 
+            border: none; 
+            border-radius: 24px; 
+            background: white;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
+            margin-top: -30px; 
+            overflow: hidden;
+            margin-bottom: 60px;
+        }
+        
+        .card-header-custom {
+            background-color: var(--emerald-light);
+            padding: 25px 35px;
+            border-bottom: 1px solid var(--slate-200);
+            color: var(--emerald);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .card-header-custom h4 { margin: 0; font-weight: 800; font-size: 1.3rem; }
+
+        .card-body { padding: 45px; }
+
+        
+        .form-label { 
+            font-weight: 700; 
+            color: var(--slate-700); 
+            margin-bottom: 10px; 
+            font-size: 0.85rem; 
+            text-transform: uppercase; 
+            letter-spacing: 0.5px;
+        }
+        
+        .form-control { 
+            border-radius: 12px; 
+            padding: 14px 18px; 
+            border: 2px solid var(--slate-200);
+            background-color: var(--slate-50);
+            transition: all 0.2s ease;
+        }
+        
+        .form-control:focus { 
+            background-color: white;
+            border-color: var(--emerald); 
+            box-shadow: 0 0 0 4px rgba(22, 101, 52, 0.08); 
+        }
+
+        .upload-hint { font-size: 0.8rem; color: #64748b; margin-top: 6px; display: block; }
+
+        
+        .btn-publish { 
+            background-color: var(--emerald); 
+            border: none; 
+            color: white; 
+            padding: 14px 35px; 
+            font-weight: 700; 
+            border-radius: 12px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .btn-publish:hover { background-color: #064e3b; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); color: white; }
+        
+        .btn-cancel { 
+            background-color: white; 
+            border: 2px solid var(--slate-200); 
+            color: var(--slate-700); 
+            padding: 14px 30px; 
+            font-weight: 700; 
+            border-radius: 12px; 
+            transition: 0.2s;
+        }
+        .btn-cancel:hover { background-color: var(--slate-50); color: var(--slate-900); }
+
+        .icon-box {
+            width: 40px;
+            height: 40px;
+            background: var(--emerald);
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/"><i class="fas fa-university me-2"></i>G.S GIHUNDWE</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/news"><i class="fas fa-arrow-left me-1"></i> VIEW NEWS</a>
+                <a class="nav-link" href="/gallery"><i class="fas fa-images me-1"></i> GALLERY</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="school-header">
+        <h1>Content Management</h1>
+    </div>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+                <div class="card admin-card">
+                    <div class="card-header-custom">
+                        <div class="d-flex align-items-center">
+                            <div class="icon-box">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <h4>Draft New News Post</h4>
+                        </div>
+                        <span class="badge bg-success opacity-75">Admin Mode</span>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/news/create}" method="post" enctype="multipart/form-data">
+                            
+                            <div class="mb-4">
+                                <label for="title" class="form-label">Headlines / Title</label>
+                                <input type="text" class="form-control" id="title" name="title" required placeholder="Enter the main title of the news...">
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="content" class="form-label">Full Story Content</label>
+                                <textarea class="form-control" id="content" name="content" rows="10" required placeholder="Provide all details about the news or event..."></textarea>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <label for="document" class="form-label">Official Attachment</label>
+                                    <input type="file" class="form-control" id="document" name="document">
+                                    <span class="upload-hint"><i class="fas fa-info-circle me-1"></i> Upload PDF or Word announcements</span>
+                                </div>
+                                
+                                <div class="col-md-6 mb-4">
+                                    <label for="image" class="form-label">Featured Photo</label>
+                                    <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                                    <span class="upload-hint"><i class="fas fa-image me-1"></i> JPG or PNG recommended</span>
+                                </div>
+                            </div>
+                            
+                            <hr class="my-5 opacity-50">
+                            
+                            <div class="d-flex align-items-center gap-3">
+                                <button type="submit" class="btn btn-publish flex-grow-1">
+                                    <i class="fas fa-paper-plane me-2"></i>PUBLISH TO WEBSITE
+                                </button>
+                                <a href="/news" class="btn btn-cancel">
+                                    DISCARD DRAFT
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <p class="text-center text-muted small">
+                    <i class="fas fa-shield-alt me-1"></i> Secure Administrative Portal for G.S. GIHUNDWE
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

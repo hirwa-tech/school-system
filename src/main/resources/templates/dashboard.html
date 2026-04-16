@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - G.S GIHUNDWE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-emerald: #064e3b;
+            --emerald-600: #059669;
+            --emerald-50: #ecfdf5;
+            --slate-50: #f8fafc;
+            --slate-200: #e2e8f0;
+            --slate-900: #0f172a;
+        }
+
+        body {
+            background-color: var(--slate-50);
+            font-family: 'Inter', sans-serif;
+            color: var(--slate-900);
+            padding-top: 80px;
+        }
+
+       
+        .navbar {
+            background: white !important;
+            border-bottom: 1px solid var(--slate-200);
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            color: var(--primary-emerald) !important;
+            letter-spacing: -0.5px;
+        }
+
+        
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-emerald), var(--emerald-600));
+            border-radius: 20px;
+            padding: 40px;
+            color: white;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px -5px rgba(6, 78, 59, 0.2);
+        }
+
+        
+        .feature-card {
+            border: 1px solid var(--slate-200);
+            border-radius: 16px;
+            background: white;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            border-color: var(--emerald-600);
+        }
+
+        .icon-box {
+            width: 56px;
+            height: 56px;
+            background: var(--emerald-50);
+            color: var(--emerald-600);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        
+        .btn-main {
+            background: var(--primary-emerald);
+            color: white;
+            border-radius: 10px;
+            padding: 12px 24px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-main:hover {
+            background: var(--emerald-600);
+            color: white;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+        }
+
+        .btn-outline-custom {
+            border: 2px solid var(--emerald-50);
+            background: var(--emerald-50);
+            color: var(--primary-emerald);
+            font-weight: 700;
+            border-radius: 8px;
+            width: 100%;
+            padding: 10px;
+        }
+
+        .btn-outline-custom:hover {
+            background: var(--primary-emerald);
+            color: white;
+            border-color: var(--primary-emerald);
+        }
+
+        
+        .user-badge {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            backdrop-filter: blur(4px);
+        }
+
+        .section-label {
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--slate-600);
+            font-size: 0.8rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-label::after {
+            content: "";
+            height: 1px;
+            flex-grow: 1;
+            background: var(--slate-200);
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="/dashboard">
+            <i class="fas fa-university me-2"></i> G.S GIHUNDWE
+        </a>
+        <div class="ms-auto d-flex align-items-center">
+            <a class="btn btn-outline-danger btn-sm rounded-pill px-4 fw-bold" href="/logout">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4 mb-5">
+    
+    <div class="page-header">
+        <div class="row align-items-center">
+            <div class="col-md-7">
+                <span class="user-badge mb-3 d-inline-block">
+                    <i class="fas fa-user-circle me-2"></i> 
+                    Logged in as: <span th:text="${user.role.name()}">ROLE</span>
+                </span>
+                <h1 class="fw-extrabold mb-2">Hello, <span th:text="${user.firstName}">User</span>!</h1>
+                <p class="opacity-75 mb-0">Welcome back to your school management portal.</p>
+            </div>
+            <div class="col-md-5 text-md-end mt-4 mt-md-0">
+                <div class="d-flex flex-wrap gap-2 justify-content-md-end">
+                    <a th:if="${user.role.name() == 'TEACHER'}" href="/classroom/create" class="btn btn-light btn-lg rounded-pill px-4 fw-bold text-success shadow-sm">
+                        <i class="fas fa-plus-circle me-2"></i>New Classroom
+                    </a>
+                    <a th:if="${user.role.name() == 'DS'}" href="/news" class="btn btn-light rounded-pill px-4 fw-bold text-success shadow-sm">
+                        <i class="fas fa-newspaper me-2"></i>Post News
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${user.role.name() == 'DS'}">
+        <div class="section-label">School Management</div>
+        <div class="row g-4 mb-5">
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="card feature-card p-4">
+                    <div class="icon-box"><i class="fas fa-newspaper"></i></div>
+                    <h6 class="fw-bold">News</h6>
+                    <p class="text-muted small">Manage articles</p>
+                    <a href="/news" class="btn btn-outline-custom mt-2">Manage</a>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="card feature-card p-4">
+                    <div class="icon-box"><i class="fas fa-images"></i></div>
+                    <h6 class="fw-bold">Gallery</h6>
+                    <p class="text-muted small">Photos & Media</p>
+                    <a href="/gallery" class="btn btn-outline-custom mt-2">Manage</a>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="card feature-card p-4">
+                    <div class="icon-box"><i class="fas fa-users"></i></div>
+                    <h6 class="fw-bold">Faculty</h6>
+                    <p class="text-muted small">Manage Teachers</p>
+                    <a href="/dashboard/teachers" class="btn btn-outline-custom mt-2">Manage</a>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="card feature-card p-4">
+                    <div class="icon-box"><i class="fas fa-envelope-open-text"></i></div>
+                    <h6 class="fw-bold">Inquiries</h6>
+                    <p class="text-muted small">User Messages</p>
+                    <a href="/dashboard/messages" class="btn btn-outline-custom mt-2">View</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${user.role.name() != 'DS'}">
+        <div class="section-label">Academic Classrooms</div>
+        
+        <div class="row g-4">
+            <div th:each="classroom : ${classrooms}" class="col-md-6 col-lg-4">
+                <div class="card feature-card p-4 border-start border-4 border-success">
+                    <div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <div class="icon-box mb-0"><i class="fas fa-chalkboard"></i></div>
+                            <span class="badge bg-light text-success align-self-start">Active</span>
+                        </div>
+                        <h5 class="fw-bold mb-2" th:text="${classroom.name}">Physics Grade 12</h5>
+                        <p class="text-muted small mb-4" th:text="${#strings.abbreviate(classroom.description, 100)}">Course description text...</p>
+                    </div>
+                    <a th:href="@{/classroom/{id}(id=${classroom.id})}" class="btn btn-main w-100">
+                        Enter Classroom <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div th:if="${classrooms.isEmpty()}" class="col-12 text-center py-5 bg-white rounded-3 shadow-sm">
+                <img src="https://illustrations.popsy.co/emerald/box-empty.svg" style="width: 150px;" class="mb-3">
+                <h5 class="fw-bold text-muted">No classrooms found</h5>
+                <p class="text-muted">You haven't been assigned to any classes yet.</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

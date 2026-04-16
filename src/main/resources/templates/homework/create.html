@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Homework - G.S. GIHUNDWE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --emerald: #166534;
+            --emerald-dark: #064e3b;
+            --emerald-light: #ecfdf5;
+            --slate-900: #0f172a;
+            --slate-700: #334155;
+            --slate-200: #e2e8f0;
+        }
+
+        body {
+            background-color: #f8fafc;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            padding: 80px 20px 40px;
+        }
+
+        .navbar-custom {
+            background-color: white;
+            border-bottom: 1px solid var(--slate-200);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .navbar-brand { font-weight: 800; color: var(--emerald) !important; }
+
+        .form-card {
+            border: none;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+            max-width: 750px;
+            margin: 0 auto;
+            background: white;
+        }
+
+        .form-header {
+            background: linear-gradient(135deg, var(--emerald) 0%, var(--emerald-dark) 100%);
+            padding: 2.5rem;
+            text-align: center;
+            color: white;
+        }
+
+        .form-label {
+            font-weight: 700;
+            color: var(--slate-900);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control, .form-select {
+            border-radius: 12px;
+            padding: 14px 18px;
+            border: 1px solid var(--slate-200);
+            background-color: #fcfcfd;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--emerald);
+            box-shadow: 0 0 0 4px var(--emerald-light);
+            background-color: white;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--slate-200);
+            border-radius: 16px;
+            padding: 35px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #fbfcfe;
+        }
+
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: var(--emerald);
+            background: var(--emerald-light);
+        }
+
+        .btn-create {
+            background-color: var(--emerald);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 16px 32px;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+
+        .btn-create:hover {
+            background-color: var(--emerald-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(22, 101, 52, 0.2);
+            color: white;
+        }
+
+        .input-group-text {
+            background-color: #f1f5f9;
+            border: 1px solid var(--slate-200);
+            border-radius: 12px 0 0 12px !important;
+            color: var(--slate-700);
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="/dashboard"><i class="fas fa-graduation-cap me-2"></i>G.S. GIHUNDWE</a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-link fw-bold text-emerald" th:href="@{/classroom/{id}(id=${classroomId})}">
+                <i class="fas fa-arrow-left me-1"></i> Back to Class
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="form-card">
+        <div class="form-header">
+            <div class="d-inline-flex align-items-center justify-content-center bg-white rounded-circle mb-3 shadow" style="width: 70px; height: 70px;">
+                <i class="fas fa-book-open text-emerald" style="font-size: 1.8rem;"></i>
+            </div>
+            <h2 class="fw-bold mb-1">New Assignment</h2>
+            <p class="mb-0 opacity-75">Assign work to the students of this classroom</p>
+        </div>
+
+        <div class="card-body p-4 p-md-5">
+            <form th:action="@{/homework/create/{id}(id=${classroomId})}" method="post" enctype="multipart/form-data" id="homeworkForm">
+                
+                <div class="mb-4">
+                    <label for="title" class="form-label">Assignment Title</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-pen-nib"></i></span>
+                        <input type="text" class="form-control" id="title" name="title" placeholder="e.g., Trigonometry Practice Set 1" required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="description" class="form-label">Instructions</label>
+                    <textarea class="form-control" id="description" name="description" rows="5" placeholder="Provide detailed steps or context for the assignment..."></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label for="dueDate" class="form-label">Submission Deadline</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-clock"></i></span>
+                        <input type="datetime-local" class="form-control" id="dueDate" name="dueDate" required>
+                    </div>
+                    <small class="text-muted mt-2 d-block"><i class="fas fa-info-circle me-1"></i> Students won't be able to submit after this time.</small>
+                </div>
+
+                <div class="mb-5">
+                    <label class="form-label">Attachment (Reference Material)</label>
+                    <div class="drop-zone" id="dropZone">
+                        <i class="fas fa-file-upload mb-2 text-emerald" style="font-size: 2rem;"></i>
+                        <h6 class="fw-bold text-slate-900 mb-0">Drag & Drop file here</h6>
+                        <p class="text-muted small mb-0">or click to browse from computer</p>
+                        <input type="file" id="fileInput" name="file" accept=".pdf,.txt,.doc,.docx" hidden>
+                    </div>
+                    <div id="filePreview" class="mt-3"></div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-8">
+                        <button type="submit" class="btn btn-create w-100 shadow-sm">
+                            <i class="fas fa-paper-plane me-2"></i>Post Assignment
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <a th:href="@{/classroom/{id}(id=${classroomId})}" class="btn btn-light w-100 border py-3 fw-bold rounded-3">
+                            Cancel
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // File Upload Preview
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const filePreview = document.getElementById('filePreview');
+
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    ['dragover', 'dragleave', 'drop'].forEach(evt => {
+        dropZone.addEventListener(evt, e => e.preventDefault());
+    });
+
+    dropZone.addEventListener('dragover', () => dropZone.classList.add('dragover'));
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+
+    dropZone.addEventListener('drop', (e) => {
+        dropZone.classList.remove('dragover');
+        if (e.dataTransfer.files.length) {
+            fileInput.files = e.dataTransfer.files;
+            handleFile(e.dataTransfer.files[0]);
+        }
+    });
+
+    fileInput.addEventListener('change', () => {
+        if (fileInput.files.length) handleFile(fileInput.files[0]);
+    });
+
+    function handleFile(file) {
+        const size = (file.size / 1024 / 1024).toFixed(2);
+        filePreview.innerHTML = `
+            <div class="p-3 border rounded-3 bg-light d-flex justify-content-between align-items-center animate__animated animate__fadeIn">
+                <span class="small fw-bold text-emerald"><i class="fas fa-file-pdf me-2"></i>${file.name} (${size} MB)</span>
+                <button type="button" class="btn btn-sm btn-outline-danger border-0" onclick="clearFile()"><i class="fas fa-trash"></i></button>
+            </div>`;
+    }
+
+    function clearFile() {
+        fileInput.value = '';
+        filePreview.innerHTML = '';
+    }
+
+    // Set minimum due date to 'Now'
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    document.getElementById('dueDate').min = now.toISOString().slice(0, 16);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DS Access - G.S. GIHUNDWE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --emerald: #166534;
+            --emerald-dark: #064e3b;
+            --emerald-light: #ecfdf5;
+            --slate-900: #0f172a;
+            --slate-600: #475569;
+            --slate-200: #e2e8f0;
+        }
+
+        body { 
+            background: radial-gradient(circle at top left, #f8fafc, #e2e8f0);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            padding: 50px 40px;
+            max-width: 420px;
+            width: 100%;
+            border: 1px solid var(--slate-200);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(to right, var(--emerald), #34d399);
+        }
+
+        .school-logo { text-align: center; margin-bottom: 35px; }
+
+        .logo-icon-wrapper {
+            width: 70px;
+            height: 70px;
+            background: var(--emerald-light);
+            color: var(--emerald);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+            margin: 0 auto 15px;
+            font-size: 2rem;
+        }
+
+        .school-logo h2 {
+            color: var(--slate-900);
+            font-weight: 800;
+            font-size: 1.5rem;
+            letter-spacing: -0.5px;
+            margin-bottom: 5px;
+        }
+
+        .form-label {
+            font-weight: 700;
+            color: var(--slate-900);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group-text {
+            background-color: #f8fafc;
+            border: 2px solid var(--slate-200);
+            color: var(--slate-600);
+        }
+
+        .btn-toggle-pwd {
+            border: 2px solid var(--slate-200);
+            border-left: none;
+            background-color: #f8fafc;
+            color: var(--slate-600);
+            border-radius: 0 12px 12px 0;
+            transition: all 0.2s;
+        }
+
+        .btn-toggle-pwd:hover { color: var(--emerald); }
+
+        .form-control { 
+            border-radius: 0; 
+            padding: 12px 15px; 
+            border: 2px solid var(--slate-200);
+            border-left: none;
+            background-color: #f8fafc;
+            font-weight: 500;
+        }
+        
+        .form-control:focus { 
+            background-color: white;
+            border-color: var(--slate-200); 
+            box-shadow: none;
+        }
+
+        
+        .input-group:focus-within .input-group-text,
+        .input-group:focus-within .form-control,
+        .input-group:focus-within .btn-toggle-pwd {
+            border-color: var(--emerald);
+        }
+
+        .btn-ds {
+            background-color: var(--emerald);
+            color: white;
+            width: 100%;
+            padding: 14px;
+            font-weight: 700;
+            border-radius: 12px;
+            border: none;
+            margin-top: 10px;
+            transition: all 0.3s;
+            box-shadow: 0 10px 15px -3px rgba(22, 101, 52, 0.2);
+        }
+
+        .btn-ds:hover {
+            background-color: var(--emerald-dark);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        .back-link {
+            color: var(--slate-600);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .back-link:hover { color: var(--emerald); }
+
+        .alert-custom {
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            background-color: #fef2f2;
+            color: #b91c1c;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="school-logo">
+            <div class="logo-icon-wrapper">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <h2>G.S. GIHUNDWE</h2>
+            <p>Administration Portal</p>
+        </div>
+
+        <div th:if="${param.error}" class="alert alert-custom mb-4 py-3">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-shield-alt me-3"></i>
+                <span>Incorrect password. Please try again.</span>
+            </div>
+        </div>
+
+        <form th:action="@{/ds/authenticate}" method="post">
+            <div class="mb-4">
+                <label for="password" class="form-label">Director of Studies Key</label>
+                <div class="input-group">
+                    <span class="input-group-text" style="border-radius: 12px 0 0 12px;">
+                        <i class="fas fa-lock"></i>
+                    </span>
+                    <input type="password" class="form-control" id="password" name="password" 
+                           placeholder="••••••••" required autofocus>
+                    <button class="btn btn-toggle-pwd" type="button" id="togglePassword">
+                        <i class="fas fa-eye" id="eyeIcon"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-ds">
+                <i class="fas fa-key me-2"></i> AUTHORIZE ACCESS
+            </button>
+        </form>
+
+        <div class="text-center mt-4">
+            <a href="/" class="back-link text-decoration-none">
+                <i class="fas fa-arrow-left me-1"></i> Return to Website
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const togglePassword = document.querySelector('#togglePassword');
+        const password = document.querySelector('#password');
+        const eyeIcon = document.querySelector('#eyeIcon');
+
+        togglePassword.addEventListener('click', function (e) {
+           
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            
+            
+            eyeIcon.classList.toggle('fa-eye');
+            eyeIcon.classList.toggle('fa-eye-slash');
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

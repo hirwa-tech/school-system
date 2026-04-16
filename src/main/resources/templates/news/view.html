@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${news.title} + ' - G.S. GIHUNDWE'">News - G.S. GIHUNDWE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link th:href="@{/css/header.css}" rel="stylesheet">
+    <link th:href="@{/css/footer.css}" rel="stylesheet">
+    <style>
+        :root {
+            --emerald: #166534; 
+            --emerald-dark: #064e3b;
+            --slate-900: #0f172a;
+            --slate-600: #475569;
+            --slate-100: #f1f5f9;
+        }
+
+        body { 
+            background-color: #f8fafc; 
+            font-family: 'Inter', sans-serif; 
+            color: var(--slate-900);
+            margin: 0;
+        }
+
+    
+        .admin-toolbar {
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(8px);
+            padding: 10px 0;
+            position: sticky;
+            top: 0;
+            z-index: 2000;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .admin-toolbar .btn {
+            font-size: 0.8rem;
+            padding: 8px 16px;
+        }
+
+        
+        .school-hero { 
+            position: relative;
+            text-align: center; 
+            padding: 100px 20px 140px 20px;
+            background: linear-gradient(rgba(22, 101, 52, 0.88), rgba(6, 78, 59, 0.93)), 
+                        url('https://images.unsplash.com/photo-1523050853063-913a6e04ed43?auto=format&fit=crop&w=1500&q=80'); 
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+            clip-path: polygon(0 0, 100% 0, 100% 88%, 0% 100%);
+            margin-bottom: -60px;
+            z-index: 1;
+        }
+
+        .school-hero h1 { 
+            font-size: clamp(2rem, 8vw, 3.5rem); 
+            font-weight: 900; 
+            text-transform: uppercase;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+       
+        .main-news-card { 
+            border: none; 
+            border-radius: 30px; 
+            background: white;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            position: relative;
+            z-index: 10;
+        }
+
+        .card-body { padding: clamp(25px, 5vw, 60px); }
+
+        .card-title { 
+            font-weight: 800; 
+            font-size: clamp(1.8rem, 5vw, 2.8rem); 
+            color: var(--slate-900);
+            line-height: 1.1;
+        }
+
+        .meta-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            color: var(--emerald);
+            font-weight: 700;
+            margin: 25px 0;
+        }
+
+        .news-content { 
+            line-height: 1.9; 
+            font-size: 1.15rem; 
+            color: #334155;
+            padding-left: 20px;
+            border-left: 3px solid var(--slate-100);
+            white-space: pre-wrap;
+        }
+
+        .img-container {
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 30px 0;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+      
+        .interaction-section {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        .interaction-stats {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+        }
+
+        .interaction-btn {
+            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: 12px;
+            transition: all 0.3s;
+            border: none;
+            background: transparent;
+            font-weight: 600;
+        }
+
+        .like-btn:hover {
+            background: rgba(239, 68, 68, 0.1);
+            transform: scale(1.05);
+        }
+
+        .comment-btn:hover {
+            background: rgba(34, 197, 94, 0.1);
+            transform: scale(1.05);
+        }
+
+        .comment-form {
+            margin-top: 20px;
+        }
+
+        .comment-form textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .comment-form button {
+            margin-top: 10px;
+            background: var(--emerald);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .comment-list {
+            margin-top: 30px;
+        }
+
+        .comment-item {
+            background: #f8fafc;
+            border-left: 4px solid var(--emerald);
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-toolbar" th:if="${isDS}">
+        <div class="container d-flex justify-content-between align-items-center">
+            <span class="text-white small fw-bold text-uppercase tracking-wider">
+                <i class="fas fa-user-shield me-2 text-warning"></i> Admin Mode
+            </span>
+            <div class="d-flex gap-2">
+                <a th:href="@{/news/{id}/edit(id=${news.id})}" class="btn btn-sm btn-outline-light rounded-pill px-3">
+                    <i class="fas fa-edit me-1"></i> Edit
+                </a>
+                <a th:href="@{/news/{id}/delete(id=${news.id})}" class="btn btn-sm btn-danger rounded-pill px-3" onclick="return confirm('Confirm deletion?')">
+                    <i class="fas fa-trash me-1"></i> Delete
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/header :: publicHeader}"></div>
+
+    <div class="school-hero">
+        <div class="container">
+            <h1>G.S. GIHUNDWE</h1>
+            <p>Academic Excellence & Integrity</p>
+        </div>
+    </div>
+
+    <div class="container pb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                
+                <div class="card main-news-card">
+                    <div class="card-body">
+                        <h2 class="card-title" th:text="${news.title}">School News Title</h2>
+                        
+                        <div class="meta-info">
+                            <span><i class="far fa-calendar-alt me-1"></i> <span th:text="${#temporals.format(news.createdAt, 'MMMM dd, yyyy')}"></span></span>
+                            <span><i class="far fa-clock me-1"></i> <span th:text="${#temporals.format(news.createdAt, 'HH:mm')}"></span></span>
+                        </div>
+                        
+                        <div th:if="${news.imagePath}" class="img-container">
+                            <img th:src="@{'/uploads/news/' + ${news.imagePath}}" class="w-100" style="object-fit: cover; max-height: 500px;" th:alt="${news.title}">
+                        </div>
+                        
+                        <div class="news-content mb-5" th:text="${news.content}">Detailed news content...</div>
+                        
+                        <div class="mt-5 pt-4 border-top" th:if="${news.documentName}">
+                            <h6 class="text-muted fw-bold mb-3">ATTACHMENTS</h6>
+                            <a th:href="@{/news/{id}/download(id=${news.id})}" class="btn btn-outline-success d-flex align-items-center justify-content-between p-3 rounded-3 w-100">
+                                <span><i class="fas fa-file-pdf me-3"></i> <span th:text="${news.documentName}">Document.pdf</span></span>
+                                <i class="fas fa-download"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Like & Comment Section -->
+                <div class="interaction-section">
+                    <h5 class="fw-bold mb-4">
+                        <i class="fas fa-heart me-2" style="color: #dc2626;"></i> 
+                        Like &amp; Comment (<span th:text="${news.likes.size() + news.comments.size()}">0</span>)
+                    </h5>
+                    
+                    <div class="interaction-stats d-flex gap-4 mb-4">
+                        <form th:action="@{/news/{id}/like(id=${news.id})}" method="post" style="display: contents;">
+                            <input type="hidden" name="username" value="Visitor">
+                            <button type="submit" class="interaction-btn like-btn">
+                                <i class="far fa-heart me-2" style="color: #dc2626;"></i>
+                                <span th:text="${news.likes.size()}">0</span> Likes
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Comment Form -->
+                    <div class="comment-form">
+                        <form th:action="@{/news/{id}/comment(id=${news.id})}" method="post">
+                            <textarea name="comment" placeholder="Write a comment as Visitor..." required maxlength="500"></textarea>
+                            <button type="submit">Post Comment</button>
+                        </form>
+                    </div>
+
+                    <!-- Comments List -->
+                    <div class="comment-list" th:if="${!news.comments.isEmpty()}">
+                        <h6 class="fw-bold mt-4 mb-3">Comments (<span th:text="${news.comments.size()}">0</span>)</h6>
+                        <div th:each="comment : ${news.comments}" class="comment-item">
+                            <small class="text-muted">Visitor</small>
+                            <p th:text="${comment}">Comment text...</p>
+                        </div>
+                    </div>
+                    <div th:if="${news.comments.isEmpty()}" class="text-muted mt-3">
+                        Be the first to comment!
+                    </div>
+                </div>
+
+                <div class="text-center mt-5">
+                    <a href="/news" class="btn btn-link text-decoration-none fw-bold text-success">
+                        <i class="fas fa-arrow-left me-2"></i> BACK TO ALL NEWS
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

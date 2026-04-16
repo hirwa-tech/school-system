@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Questions - G.S. GIHUNDWE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --emerald: #166534;
+            --emerald-dark: #064e3b;
+            --emerald-light: #ecfdf5;
+            --slate-900: #0f172a;
+            --slate-700: #334155;
+            --slate-200: #e2e8f0;
+        }
+
+        body {
+            background-color: #f8fafc;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            padding-top: 80px;
+            padding-bottom: 50px;
+        }
+
+        .navbar-custom {
+            background-color: white;
+            border-bottom: 1px solid var(--slate-200);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .navbar-brand { font-weight: 800; color: var(--emerald) !important; }
+
+        .mgmt-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid var(--slate-200);
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .total-badge {
+            background-color: var(--emerald-light);
+            color: var(--emerald);
+            padding: 0.5rem 1.25rem;
+            border-radius: 50px;
+            font-weight: 700;
+            border: 1px solid rgba(22, 101, 52, 0.2);
+        }
+
+        .q-table {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--slate-200);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        .q-table thead {
+            background-color: var(--slate-900);
+            color: white;
+        }
+
+        .q-table th {
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            padding: 1.25rem 1rem;
+            border: none;
+        }
+
+        .q-table td {
+            vertical-align: middle;
+            padding: 1.1rem 1rem;
+            color: var(--slate-700);
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .badge-type {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-radius: 6px;
+        }
+
+        .option-tag {
+            background: #f1f5f9;
+            color: var(--slate-700);
+            font-size: 0.75rem;
+            margin-right: 4px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 3px;
+        }
+
+        .btn-action {
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-edit { background-color: var(--emerald-light); color: var(--emerald); border: none; }
+        .btn-edit:hover { background-color: var(--emerald); color: white; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="/dashboard"><i class="fas fa-graduation-cap me-2"></i>G.S. GIHUNDWE</a>
+        <div class="navbar-nav ms-auto align-items-center">
+            <a class="nav-link fw-bold text-emerald me-3" th:href="@{/classroom/{id}(id=${quiz.classroom.id})}">
+                <i class="fas fa-arrow-left me-1"></i> Classroom
+            </a>
+            <a class="btn btn-outline-danger btn-sm fw-bold rounded-pill px-3" href="/logout">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="mgmt-header d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a th:href="@{/classroom/{id}/quizzes(id=${quiz.classroom.id})}" class="text-emerald">Quizzes</a></li>
+                    <li class="breadcrumb-item active">Questions</li>
+                </ol>
+            </nav>
+            <h2 class="fw-bold text-slate-900 mb-0" th:text="${quiz.title}">Quiz Title</h2>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <div class="total-badge shadow-sm">
+                <i class="fas fa-star-half-alt me-2"></i>Total Marks: <span th:text="${totalMarks}">0</span>
+            </div>
+            <a th:href="@{/quiz/{id}/question/create(id=${quiz.id})}" class="btn btn-emerald text-white fw-bold px-4 rounded-pill shadow-sm" style="background-color: var(--emerald);">
+                <i class="fas fa-plus me-2"></i>Add Question
+            </a>
+        </div>
+    </div>
+
+    <div th:if="${message}" class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm border-0 mb-4" role="alert">
+        <i class="fas fa-check-circle me-2"></i><span th:text="${message}">Success!</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div class="q-table table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th class="text-center" style="width: 50px;">#</th>
+                    <th style="min-width: 250px;">Question Prompt</th>
+                    <th>Type</th>
+                    <th class="text-center">Marks</th>
+                    <th>Details</th>
+                    <th>Key</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="question, iterStat : ${questions}">
+                    <td class="text-center fw-bold text-muted" th:text="${iterStat.index + 1}">1</td>
+                    <td>
+                        <div class="fw-bold text-slate-900" th:text="${question.questionText}">Question Content</div>
+                    </td>
+                    <td>
+                        <span class="badge badge-type" 
+                              th:classappend="${question.type.name() == 'MULTIPLE_CHOICE' ? 'bg-primary' : (question.type.name() == 'OPEN_QUESTION' ? 'bg-info' : 'bg-warning text-dark')}"
+                              th:text="${question.type}">TYPE</span>
+                    </td>
+                    <td class="text-center">
+                        <span class="fw-bold text-emerald" th:text="${question.marks != null ? question.marks : 1}">1</span>
+                    </td>
+                    <td style="max-width: 200px;">
+                        <div th:if="${question.options != null and !#lists.isEmpty(question.options)}">
+                            <span th:each="opt : ${question.options}" class="option-tag" th:text="${opt}">Option</span>
+                        </div>
+                        <span th:if="${question.options == null or #lists.isEmpty(question.options)}" class="text-muted small italic">N/A</span>
+                    </td>
+                    <td>
+                        <span th:if="${question.type.name() == 'OPEN_QUESTION'}" class="text-muted small">
+                            <i class="fas fa-user-edit me-1"></i>Manual
+                        </span>
+                        <code th:if="${question.type.name() != 'OPEN_QUESTION'}" class="text-emerald fw-bold" th:text="${question.correctAnswer}">KEY</code>
+                    </td>
+                    <td class="text-end">
+                        <div class="btn-group">
+                            <a th:href="@{/quiz/{quizId}/question/{qId}/edit(quizId=${quiz.id},qId=${question.id})}" 
+                               class="btn btn-sm btn-action btn-edit me-2" title="Edit">
+                                <i class="fas fa-pen"></i>
+                            </a>
+                            <a th:href="@{/quiz/{quizId}/question/{qId}/delete(quizId=${quiz.id},qId=${question.id})}" 
+                               class="btn btn-sm btn-action btn-outline-danger" 
+                               onclick="return confirm('Delete this question permanentely?')" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(questions)}">
+                    <td colspan="7" class="text-center py-5">
+                        <div class="text-muted">
+                            <i class="fas fa-inbox fa-3x mb-3 opacity-20"></i>
+                            <p class="mb-0">This quiz currently has no questions.</p>
+                            <a th:href="@{/quiz/{id}/question/create(id=${quiz.id})}" class="text-emerald fw-bold">Click here to add the first one.</a>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-4 d-flex justify-content-between">
+        <a th:href="@{/quiz/{id}/edit(id=${quiz.id})}" class="btn btn-light border fw-bold text-slate-700 px-4 rounded-pill">
+            <i class="fas fa-cog me-2"></i>Quiz Settings
+        </a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

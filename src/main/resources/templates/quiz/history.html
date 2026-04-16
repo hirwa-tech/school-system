@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>My Quiz History - LMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/dashboard">LMS</a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-link" href="/logout">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <h2>My Quiz History</h2>
+    
+    <div th:if="${attempts.empty}" class="alert alert-info">
+        You haven't attempted any quizzes yet.
+    </div>
+    
+    <div th:if="${!attempts.empty}" class="row">
+        <div th:each="attempt : ${attempts}" class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${attempt.quiz.title}">Quiz Title</h5>
+                    <p class="card-text"><strong>Classroom:</strong> <span th:text="${attempt.quiz.classroom.name}">Classroom</span></p>
+                    <p class="card-text"><strong>Status:</strong> 
+                        <span th:class="${attempt.status.name() == 'GRADED' ? 'badge bg-success' : 'badge bg-warning'}" 
+                              th:text="${attempt.status}">Status</span>
+                    </p>
+                    <p class="card-text"><strong>Score:</strong> 
+                        <span th:if="${attempt.score != null}" th:text="${#numbers.formatDecimal(attempt.score, 1, 1)} + ' / ' + ${#numbers.formatDecimal(attempt.totalMarks, 1, 1)}">0 / 0</span>
+                        <span th:if="${attempt.score == null}">Pending</span>
+                    </p>
+                    <p class="card-text"><strong>Submitted:</strong> <span th:text="${#temporals.format(attempt.endTime, 'yyyy-MM-dd HH:mm')}">Time</span></p>
+                    <a th:href="@{/quiz/result/{id}(id=${attempt.id})}" class="btn btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <a href="/dashboard" class="btn btn-secondary">Back to Dashboard</a>
+</div>
+</body>
+</html>

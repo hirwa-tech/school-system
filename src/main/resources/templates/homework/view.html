@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment Details - G.S. GIHUNDWE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --emerald: #166534;
+            --emerald-dark: #064e3b;
+            --emerald-light: #ecfdf5;
+            --slate-900: #0f172a;
+            --slate-700: #334155;
+            --slate-200: #e2e8f0;
+            --ruby: #991b1b;
+        }
+
+        body {
+            background-color: #f8fafc;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            padding: 100px 20px 60px;
+        }
+
+        .navbar-custom {
+            background-color: white;
+            border-bottom: 1px solid var(--slate-200);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .navbar-brand { font-weight: 800; color: var(--emerald) !important; }
+
+        .homework-card {
+            border: none;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+        }
+
+        .homework-header {
+            background: linear-gradient(135deg, var(--emerald-dark) 0%, var(--slate-900) 100%);
+            padding: 3rem 2.5rem;
+            color: white;
+        }
+
+        .info-card {
+            background: #ffffff;
+            border: 1px solid var(--slate-200);
+            border-radius: 16px;
+            padding: 20px;
+            height: 100%;
+            transition: all 0.2s;
+        }
+
+        .content-box {
+            background: #fcfcfd;
+            border: 1px solid var(--slate-200);
+            border-radius: 16px;
+            padding: 25px;
+            min-height: 150px;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: var(--slate-700);
+        }
+
+        .file-attachment {
+            background: var(--emerald-light);
+            border: 1px dashed var(--emerald);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .btn-action {
+            border-radius: 12px;
+            padding: 14px 24px;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+
+        .btn-emerald {
+            background-color: var(--emerald);
+            color: white;
+            border: none;
+        }
+        .btn-emerald:hover { background-color: var(--emerald-dark); color: white; transform: translateY(-2px); }
+
+        .label-header {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 800;
+            color: var(--slate-900);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="/dashboard"><i class="fas fa-graduation-cap me-2"></i>G.S. GIHUNDWE</a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-link fw-bold text-emerald" th:href="@{/homework/classroom/{id}(id=${homework.classroom.id})}">
+                <i class="fas fa-chevron-left me-1"></i> Back to Class
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="homework-card">
+        <div class="homework-header">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                <div>
+                    <span class="badge bg-success mb-2 px-3 py-2 rounded-pill">Assignment Active</span>
+                    <h1 class="fw-bold mb-0" th:text="${homework.title}">Trigonometry Part II</h1>
+                    <p class="mb-0 opacity-75 mt-1">
+                        <i class="fas fa-chalkboard-teacher me-2"></i>Posted in <span th:text="${homework.classroom.name}">Class Name</span>
+                    </p>
+                </div>
+                <div th:if="${isTeacher}" class="mt-3 mt-md-0 d-flex gap-2">
+                    <a th:href="@{/homework/{id}/edit(id=${homework.id})}" class="btn btn-light btn-action">
+                        <i class="fas fa-edit me-2"></i>Edit
+                    </a>
+                    <a th:href="@{/homework/{id}/delete(id=${homework.id})}" class="btn btn-outline-danger btn-action bg-white" 
+                       onclick="return confirm('Careful! This will also delete all student submissions. Continue?')">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-4 p-md-5">
+            <div class="row g-4 mb-5">
+                <div class="col-md-6">
+                    <div class="info-card">
+                        <div class="label-header"><i class="fas fa-clock text-emerald me-2"></i>Submission Deadline</div>
+                        <h5 class="fw-bold text-slate-900 mb-1" 
+                            th:text="${homework.dueDate != null ? #temporals.format(homework.dueDate, 'EEEE, MMM dd, yyyy') : 'No Deadline'}">Date</h5>
+                        <p class="text-muted small mb-0">
+                            Time: <span th:text="${homework.dueDate != null ? #temporals.format(homework.dueDate, 'HH:mm') : '--:--'}">00:00</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-card">
+                        <div class="label-header"><i class="fas fa-info-circle text-emerald me-2"></i>Assignment Type</div>
+                        <h5 class="fw-bold text-slate-900 mb-1">Standard Submission</h5>
+                        <p class="text-muted small mb-0">Requires file upload or text response.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-5">
+                <div class="label-header"><i class="fas fa-align-left text-emerald me-2"></i>Instructions</div>
+                <div class="content-box">
+                    <p class="mb-0" th:text="${homework.description != null ? homework.description : 'The teacher provided no specific instructions for this task.'}"></p>
+                </div>
+            </div>
+
+            <div class="mb-5" th:if="${homework.fileName != null}">
+                <div class="label-header"><i class="fas fa-paperclip text-emerald me-2"></i>Provided Resources</div>
+                <div class="file-attachment">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-white p-3 rounded-3 me-3 shadow-sm">
+                            <i class="fas fa-file-pdf text-danger fa-2x"></i>
+                        </div>
+                        <div>
+                            <strong class="text-slate-900 d-block" th:text="${homework.fileName}">assignment.pdf</strong>
+                            <span class="text-muted small" th:text="${homework.fileSize != null ? homework.fileSize / 1024 + ' KB' : 'Unknown size'}">0 KB</span>
+                        </div>
+                    </div>
+                    <a th:href="@{/homework/{id}/download(id=${homework.id})}" class="btn btn-emerald btn-action">
+                        <i class="fas fa-download me-2"></i>Download
+                    </a>
+                </div>
+            </div>
+
+            <hr class="my-5 opacity-5">
+
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+                <a th:href="@{/homework/classroom/{id}(id=${homework.classroom.id})}" class="btn btn-light btn-action text-slate-700">
+                    <i class="fas fa-arrow-left me-2"></i>Return to List
+                </a>
+                
+                <div th:if="${!isTeacher}">
+                    <a th:href="@{/homework/{id}/submit(id=${homework.id})}" class="btn btn-emerald btn-action px-5 shadow">
+                        <i class="fas fa-upload me-2"></i>Go to Submission Page
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

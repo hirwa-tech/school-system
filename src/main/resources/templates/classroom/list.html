@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classrooms - G.S. GIHUNDWE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --emerald: #166534;
+            --emerald-dark: #064e3b;
+            --emerald-light: #ecfdf5;
+            --slate-900: #0f172a;
+            --slate-600: #475569;
+            --slate-200: #e2e8f0;
+        }
+
+        body {
+            background-color: #f8fafc;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            padding-top: 80px; 
+            min-height: 100vh;
+        }
+
+        
+        .navbar-custom {
+            background-color: white;
+            border-bottom: 1px solid var(--slate-200);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .navbar-brand { font-weight: 800; color: var(--emerald) !important; }
+
+       
+        .page-title {
+            color: var(--slate-900);
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        
+        .classroom-card {
+            border: 1px solid var(--slate-200);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            background: white;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .classroom-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            border-color: var(--emerald-light);
+        }
+
+        .card-header-custom {
+            background: linear-gradient(135deg, var(--emerald) 0%, var(--emerald-dark) 100%);
+            color: white;
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .classroom-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .student-count-badge {
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--emerald-dark);
+            font-weight: 700;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .teacher-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--slate-600);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+       
+        .btn-emerald {
+            background-color: var(--emerald);
+            color: white;
+            border-radius: 10px;
+            font-weight: 600;
+            padding: 0.6rem 1.2rem;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-emerald:hover {
+            background-color: var(--emerald-dark);
+            color: white;
+            transform: scale(1.02);
+        }
+
+        .btn-view {
+            border: 2px solid var(--emerald);
+            color: var(--emerald);
+            border-radius: 10px;
+            font-weight: 700;
+            width: 100%;
+            margin-top: auto;
+        }
+
+        .btn-view:hover {
+            background-color: var(--emerald);
+            color: white;
+        }
+
+        
+        .empty-state {
+            background: white;
+            border-radius: 24px;
+            padding: 4rem 2rem;
+            border: 2px dashed var(--slate-200);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="fas fa-graduation-cap me-2"></i>G.S. GIHUNDWE
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link fw-bold px-3" href="/dashboard">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link fw-bold px-3 text-emerald" href="/classroom">Classrooms</a></li>
+                    <li class="nav-item ms-lg-3">
+                        <a class="nav-link text-danger fw-bold" href="/logout"><i class="fas fa-power-off me-1"></i>Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div th:if="${message}" class="alert alert-success alert-dismissible fade show border-0 shadow-sm" role="alert">
+            <i class="fas fa-check-circle me-2"></i><span th:text="${message}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-3">
+            <div>
+                <h2 class="page-title mb-1">My Classrooms</h2>
+                <p class="text-muted mb-0">Manage and access your active learning spaces.</p>
+            </div>
+            <a th:if="${user.role.name() == 'TEACHER'}" href="/classroom/create" class="btn btn-emerald">
+                <i class="fas fa-plus-circle me-2"></i>Create New Classroom
+            </a>
+        </div>
+
+        <div class="row g-4">
+            <div th:each="classroom : ${classrooms}" class="col-md-6 col-lg-4">
+                <div class="card classroom-card">
+                    <div class="card-header-custom">
+                        <div class="classroom-icon">
+                            <i class="fas fa-book-reader"></i>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h5 class="mb-0 text-white fw-bold" th:text="${classroom.name}">Class Name</h5>
+                            <span class="student-count-badge">
+                                <i class="fas fa-users me-1"></i> <span th:text="${classroom.students.size()}">0</span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="card-body d-flex flex-column p-4">
+                        <div class="teacher-name mb-2">
+                            <i class="fas fa-user-tie text-emerald"></i>
+                            <span th:text="${classroom.teacher.username}">Teacher Name</span>
+                        </div>
+                        <p class="text-muted small mb-4" th:text="${classroom.description}">
+                            No description provided for this classroom.
+                        </p>
+                        <a th:href="@{/classroom/{id}(id=${classroom.id})}" class="btn btn-view">
+                            View Classroom <i class="fas fa-arrow-right ms-2 small"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${classrooms.isEmpty()}" class="empty-state text-center mt-4">
+            <div class="mb-4">
+                <i class="fas fa-folder-open text-slate-200" style="font-size: 5rem; color: #e2e8f0;"></i>
+            </div>
+            <h3 class="fw-bold var(--slate-900)">No Classrooms Yet</h3>
+            <p class="text-muted mx-auto" style="max-width: 400px;">
+                <span th:if="${user.role.name() == 'TEACHER'}">You haven't created any classes. Start by clicking the button below to set up your first one!</span>
+                <span th:unless="${user.role.name() == 'TEACHER'}">You aren't enrolled in any classes yet. Ask your teacher for an access code to get started.</span>
+            </p>
+            <a th:if="${user.role.name() == 'TEACHER'}" href="/classroom/create" class="btn btn-emerald mt-3 px-4 py-2">
+                <i class="fas fa-plus-circle me-2"></i>Create Classroom
+            </a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
